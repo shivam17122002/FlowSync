@@ -1,4 +1,4 @@
-# TaskHub
+# FlowSync
 
 TaskHub is a full-stack project management application built for collaborative work across workspaces, projects, and tasks. It supports authentication, email verification, workspace invitations, project planning, task tracking, comments, watchers, and dashboard analytics.
 
