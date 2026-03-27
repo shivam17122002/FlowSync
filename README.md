@@ -1,5 +1,11 @@
 # FlowSync
 
+## 🌐 Demo
+
+Check out the live version of the project:  
+👉 [FlowSync Live Demo](https://flow-sync-neon.vercel.app/)
+
+demo href = "https://flow-sync-neon.vercel.app/"
 TaskHub is a full-stack project management application built for collaborative work across workspaces, projects, and tasks. It supports authentication, email verification, workspace invitations, project planning, task tracking, comments, watchers, and dashboard analytics.
 
 ## Why This Project
