@@ -16,29 +16,32 @@ function Calendar({
       showOutsideDays={showOutsideDays}
       className={cn("p-3", className)}
       classNames={{
-        months: "flex flex-col sm:flex-row gap-2",
-        month: "flex flex-col gap-4",
-        caption: "flex justify-center pt-1 relative items-center w-full",
+        months: "flex flex-col gap-4 sm:flex-row",
+        month: "flex w-full flex-col gap-4",
+        month_caption: "relative flex h-8 items-center justify-center px-8",
         caption_label: "text-sm font-medium",
-        nav: "flex items-center gap-1",
-        nav_button: cn(
+        nav: "absolute inset-x-0 top-0 flex items-center justify-between",
+        button_previous: cn(
           buttonVariants({ variant: "outline" }),
           "size-7 bg-transparent p-0 opacity-50 hover:opacity-100"
         ),
-        nav_button_previous: "absolute left-1",
-        nav_button_next: "absolute right-1",
-        table: "w-full border-collapse space-x-1",
-        head_row: "flex",
-        head_cell:
+        button_next: cn(
+          buttonVariants({ variant: "outline" }),
+          "size-7 bg-transparent p-0 opacity-50 hover:opacity-100"
+        ),
+        month_grid: "w-full border-collapse space-y-1",
+        weekdays: "flex",
+        weekday:
           "text-muted-foreground rounded-md w-8 font-normal text-[0.8rem]",
-        row: "flex w-full mt-2",
+        week: "mt-2 flex w-full",
         cell: cn(
           "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent [&:has([aria-selected].day-range-end)]:rounded-r-md",
           props.mode === "range"
-            ? "[&:has(>.day-range-end)]:rounded-r-md [&:has(>.day-range-start)]:rounded-l-md first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md"
+            ? "[&:has(>.rdp-day_button.day-range-end)]:rounded-r-md [&:has(>.rdp-day_button.day-range-start)]:rounded-l-md first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md"
             : "[&:has([aria-selected])]:rounded-md"
         ),
-        day: cn(
+        day: "h-8 w-8 p-0 font-normal aria-selected:opacity-100",
+        day_button: cn(
           buttonVariants({ variant: "ghost" }),
           "size-8 p-0 font-normal aria-selected:opacity-100"
         ),
@@ -58,12 +61,12 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        IconLeft: ({ className, ...props }) => (
-          <ChevronLeft className={cn("size-4", className)} {...props} />
-        ),
-        IconRight: ({ className, ...props }) => (
-          <ChevronRight className={cn("size-4", className)} {...props} />
-        ),
+        Chevron: ({ orientation, className, ...props }) =>
+          orientation === "left" ? (
+            <ChevronLeft className={cn("size-4", className)} {...props} />
+          ) : (
+            <ChevronRight className={cn("size-4", className)} {...props} />
+          ),
       }}
       {...props}
     />
