@@ -1,8 +1,15 @@
 import User from "../models/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import {
+  createVerificationToken,
+  deleteExistingVerification,
+  getValidVerification,
+  buildVerificationLink,
+  sendVerificationEmail
+} from "../libs/verification-util.js";
 import Verification from "../models/verification.js";
-import { isSendGridConfigured, sendEmail } from "../libs/send-email.js";
+import { isSendGridConfigured } from "../libs/send-email.js";
 import aj from "../libs/arcjet.js";
 
 const isDevelopment = process.env.NODE_ENV !== "production";
@@ -42,43 +49,22 @@ const registerUser = async (req, res) => {
       name,
     });
 
-    const verificationToken = jwt.sign(
-      { userId: newUser._id, purpose: "email-verification" },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
-
-    await Verification.create({
-      userId: newUser._id,
-      token: verificationToken,
-      expiresAt: new Date(Date.now() + 1 * 60 * 60 * 1000),
-    });
-
-    // send email
-    const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
-    const emailBody = `<p>Click <a href="${verificationLink}">here</a> to verify your email</p>`;
+    // Create verification token and send email
+    await deleteExistingVerification(newUser._id);
+    const { token: verificationToken } = await createVerificationToken(newUser._id, "email-verification", "1h");
+    const verificationLink = buildVerificationLink(verificationToken, "verify-email");
     const emailSubject = "Verify your email";
-
-    const isEmailSent = await sendEmail(email, emailSubject, emailBody);
-
-    if (!isEmailSent) {
-      if (isDevelopment && !isSendGridConfigured) {
-        return res.status(201).json(
-          buildDevEmailResponse(
-            "Account created. Email delivery is disabled locally, so use the verification link from this response.",
-            { verificationLink, verificationToken }
-          )
-        );
-      }
-
-      return res
-        .status(500)
-        .json({ message: "Failed to send verification email" });
+    const devMsg = "Account created. Email delivery is disabled locally, so use the verification link from this response.";
+    const devExtra = { verificationLink, verificationToken };
+    const emailResult = await sendVerificationEmail(email, verificationLink, emailSubject, devMsg, devExtra);
+    if (emailResult.dev) {
+      return res.status(201).json(emailResult.response);
     }
-
+    if (emailResult.error) {
+      return res.status(500).json(emailResult.response);
+    }
     res.status(201).json({
-      message:
-        "Verification email sent to your email. Please check and verify your account.",
+      message: "Verification email sent to your email. Please check and verify your account.",
     });
   } catch (error) {
     console.log(error);
@@ -98,57 +84,27 @@ const loginUser = async (req, res) => {
     }
 
     if (!user.isEmailVerified) {
-      const existingVerification = await Verification.findOne({
-        userId: user._id,
-      });
-
-      if (existingVerification && existingVerification.expiresAt > new Date()) {
-        return res.status(400).json({
-          message:
-            "Email not verified. Please check your email for the verification link.",
-        });
-      }
-
+      const existingVerification = await getValidVerification(user._id);
       if (existingVerification) {
-        await Verification.findByIdAndDelete(existingVerification._id);
-      }
-
-      const verificationToken = jwt.sign(
-        { userId: user._id, purpose: "email-verification" },
-        process.env.JWT_SECRET,
-        { expiresIn: "1h" }
-      );
-
-      await Verification.create({
-        userId: user._id,
-        token: verificationToken,
-        expiresAt: new Date(Date.now() + 1 * 60 * 60 * 1000),
-      });
-
-      const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
-      const emailBody = `<p>Click <a href="${verificationLink}">here</a> to verify your email</p>`;
-      const emailSubject = "Verify your email";
-
-      const isEmailSent = await sendEmail(email, emailSubject, emailBody);
-
-      if (!isEmailSent) {
-        if (isDevelopment && !isSendGridConfigured) {
-          return res.status(200).json(
-            buildDevEmailResponse(
-              "Email verification is required. Email delivery is disabled locally, so use the verification link from this response.",
-              { verificationLink, verificationToken }
-            )
-          );
-        }
-
-        return res.status(500).json({
-          message: "Failed to send verification email",
+        return res.status(400).json({
+          message: "Email not verified. Please check your email for the verification link.",
         });
       }
-
+      await deleteExistingVerification(user._id);
+      const { token: verificationToken } = await createVerificationToken(user._id, "email-verification", "1h");
+      const verificationLink = buildVerificationLink(verificationToken, "verify-email");
+      const emailSubject = "Verify your email";
+      const devMsg = "Email verification is required. Email delivery is disabled locally, so use the verification link from this response.";
+      const devExtra = { verificationLink, verificationToken };
+      const emailResult = await sendVerificationEmail(email, verificationLink, emailSubject, devMsg, devExtra);
+      if (emailResult.dev) {
+        return res.status(200).json(emailResult.response);
+      }
+      if (emailResult.error) {
+        return res.status(500).json(emailResult.response);
+      }
       return res.status(201).json({
-        message:
-          "Verification email sent to your email. Please check and verify your account.",
+        message: "Verification email sent to your email. Please check and verify your account.",
       });
     }
 
@@ -251,53 +207,25 @@ const resetPasswordRequest = async (req, res) => {
         .json({ message: "Please verify your email first" });
     }
 
-    const existingVerification = await Verification.findOne({
-      userId: user._id,
-    });
-
-    if (existingVerification && existingVerification.expiresAt > new Date()) {
+    const existingVerification = await getValidVerification(user._id);
+    if (existingVerification) {
       return res.status(400).json({
         message: "Reset password request already sent",
       });
     }
-
-    if (existingVerification && existingVerification.expiresAt < new Date()) {
-      await Verification.findByIdAndDelete(existingVerification._id);
-    }
-
-    const resetPasswordToken = jwt.sign(
-      { userId: user._id, purpose: "reset-password" },
-      process.env.JWT_SECRET,
-      { expiresIn: "15m" }
-    );
-
-    await Verification.create({
-      userId: user._id,
-      token: resetPasswordToken,
-      expiresAt: new Date(Date.now() + 15 * 60 * 1000),
-    });
-
-    const resetPasswordLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetPasswordToken}`;
-    const emailBody = `<p>Click <a href="${resetPasswordLink}">here</a> to reset your password</p>`;
+    await deleteExistingVerification(user._id);
+    const { token: resetPasswordToken } = await createVerificationToken(user._id, "reset-password", "15m");
+    const resetPasswordLink = buildVerificationLink(resetPasswordToken, "reset-password");
     const emailSubject = "Reset your password";
-
-    const isEmailSent = await sendEmail(email, emailSubject, emailBody);
-
-    if (!isEmailSent) {
-      if (isDevelopment && !isSendGridConfigured) {
-        return res.status(200).json(
-          buildDevEmailResponse(
-            "Reset password email delivery is disabled locally, so use the reset link from this response.",
-            { resetPasswordLink, resetPasswordToken }
-          )
-        );
-      }
-
-      return res.status(500).json({
-        message: "Failed to send reset password email",
-      });
+    const devMsg = "Reset password email delivery is disabled locally, so use the reset link from this response.";
+    const devExtra = { resetPasswordLink, resetPasswordToken };
+    const emailResult = await sendVerificationEmail(email, resetPasswordLink, emailSubject, devMsg, devExtra);
+    if (emailResult.dev) {
+      return res.status(200).json(emailResult.response);
     }
-
+    if (emailResult.error) {
+      return res.status(500).json(emailResult.response);
+    }
     res.status(200).json({ message: "Reset password email sent" });
   } catch (error) {
     console.log(error);

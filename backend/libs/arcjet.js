@@ -8,10 +8,8 @@ import arcjet, {
 const arcjetMode = process.env.NODE_ENV === "production" ? "LIVE" : "DRY_RUN";
 
 const aj = arcjet({
-  // Get your site key from https://app.arcjet.com and set it as an environment
-  // variable rather than hard coding.
   key: process.env.ARCJET_KEY,
-  characteristics: ["ip.src"], // Track requests by IP
+  characteristics: ["ip.src"],
   rules: [
     // Shield protects your app from common attacks e.g. SQL injection
     shield({ mode: arcjetMode }),
