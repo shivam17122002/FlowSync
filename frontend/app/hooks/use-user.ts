@@ -1,11 +1,18 @@
 import { fetchData, updateData } from "@/lib/fetch-util";
-import type {
-  ChangePasswordFormData,
-  ProfileFormData,
-} from "@/routes/user/profile";
 import { useMutation, useQuery, type QueryKey } from "@tanstack/react-query";
 
 const queryKey: QueryKey = ["user"];
+
+export type ChangePasswordFormData = {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+};
+
+export type ProfileFormData = {
+  name: string;
+  profilePicture?: string;
+};
 
 export const useUserProfileQuery = () => {
   return useQuery({

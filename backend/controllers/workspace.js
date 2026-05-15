@@ -1,5 +1,8 @@
 import Workspace from "../models/workspace.js";
 import Project from "../models/project.js";
+import Task from "../models/task.js";
+import Comment from "../models/comment.js";
+import ActivityLog from "../models/activity.js";
 import User from "../models/user.js";
 import WorkspaceInvite from "../models/workspace-invite.js";
 import jwt from "jsonwebtoken";
@@ -530,6 +533,62 @@ const acceptInviteByToken = async (req, res) => {
     });
   }
 };
+
+const deleteWorkspace = async (req, res) => {
+  try {
+    const { workspaceId } = req.params;
+
+    const workspace = await Workspace.findById(workspaceId);
+
+    if (!workspace) {
+      return res.status(404).json({
+        message: "Workspace not found",
+      });
+    }
+
+    if (workspace.owner.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        message: "Only the workspace owner can delete this workspace",
+      });
+    }
+
+    const projects = await Project.find({ workspace: workspaceId }).select(
+      "_id"
+    );
+    const projectIds = projects.map((project) => project._id);
+
+    const tasks = await Task.find({ project: { $in: projectIds } }).select(
+      "_id comments"
+    );
+    const taskIds = tasks.map((task) => task._id);
+    const commentIds = tasks.flatMap((task) => task.comments);
+
+    await Promise.all([
+      Comment.deleteMany({
+        $or: [{ task: { $in: taskIds } }, { _id: { $in: commentIds } }],
+      }),
+      ActivityLog.deleteMany({
+        resourceId: {
+          $in: [workspace._id, ...projectIds, ...taskIds, ...commentIds],
+        },
+      }),
+      WorkspaceInvite.deleteMany({ workspaceId }),
+      Task.deleteMany({ _id: { $in: taskIds } }),
+      Project.deleteMany({ _id: { $in: projectIds } }),
+      Workspace.deleteOne({ _id: workspaceId }),
+    ]);
+
+    res.status(200).json({
+      message: "Workspace deleted successfully",
+    });
+  } catch (error) {
+    console.log("Workspace delete error", error);
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
 export {
   createWorkspace,
   getWorkspaces,
@@ -539,4 +598,5 @@ export {
   inviteUserToWorkspace,
   acceptGenerateInvite,
   acceptInviteByToken,
+  deleteWorkspace,
 };

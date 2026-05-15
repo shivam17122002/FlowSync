@@ -112,16 +112,13 @@ const MyTasks = () => {
     );
   return (
     <div className="space-y-6">
-      <div className="flex items-start md:items-center justify-between">
+      <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
         <h1 className="text-2xl font-bold">My Tasks</h1>
 
-        <div
-          className="flex flex-col items-start md:flex-row md"
-          itemScope
-          gap-2
-        >
+        <div className="flex w-full flex-col items-start gap-2 sm:w-auto sm:flex-row">
           <Button
             variant={"outline"}
+            className="w-full sm:w-auto"
             onClick={() =>
               setSortDirection(sortDirection === "asc" ? "desc" : "asc")
             }
@@ -131,7 +128,7 @@ const MyTasks = () => {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant={"outline"}>
+              <Button variant={"outline"} className="w-full sm:w-auto">
                 <FilterIcon className="w-4 h-4" /> Filter
               </Button>
             </DropdownMenuTrigger>
@@ -166,11 +163,11 @@ const MyTasks = () => {
         placeholder="Search tasks ...."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="max-w-md"
+        className="w-full max-w-md"
       />
 
-      <Tabs defaultValue="list">
-        <TabsList>
+      <Tabs defaultValue="list" className="min-w-0">
+        <TabsList className="w-full sm:w-auto">
           <TabsTrigger value="list">List View</TabsTrigger>
           <TabsTrigger value="board">Board View</TabsTrigger>
         </TabsList>
@@ -186,12 +183,12 @@ const MyTasks = () => {
             </CardHeader>
 
             <CardContent>
-              <div className="divide-y">
+              <div className="divide-y overflow-hidden">
                 {sortedTasks?.map((task) => (
                   <div key={task._id} className="p-4 hover:bg-muted/50">
                     <div className="flex flex-col md:flex-row md:items-center justify-between mb-2 gap-3">
-                      <div className="flex">
-                        <div className="flex gap-2 mr-2">
+                      <div className="flex min-w-0">
+                        <div className="mr-2 flex shrink-0 gap-2">
                           {task.status === "Done" ? (
                             <CheckCircle className="size-4 text-green-500" />
                           ) : (
@@ -199,15 +196,15 @@ const MyTasks = () => {
                           )}
                         </div>
 
-                        <div>
+                        <div className="min-w-0">
                           <Link
                             to={`/workspaces/${task.project.workspace}/projects/${task.project._id}/tasks/${task._id}`}
-                            className="font-medium hover:text-primary hover:underline transition-colors flex items-center"
+                            className="flex min-w-0 items-center font-medium transition-colors hover:text-primary hover:underline"
                           >
-                            {task.title}
-                            <ArrowUpRight className="size-4 ml-1" />
+                            <span className="truncate">{task.title}</span>
+                            <ArrowUpRight className="ml-1 size-4 shrink-0" />
                           </Link>
-                          <div className="flex items-center space-x-2 mt-1">
+                          <div className="mt-1 flex flex-wrap items-center gap-2">
                             <Badge
                               variant={
                                 task.status === "Done" ? "default" : "outline"
@@ -235,14 +232,14 @@ const MyTasks = () => {
                         </div>
                       </div>
 
-                      <div className="text-sm text-muted-foreground space-y-1">
+                      <div className="space-y-1 text-sm text-muted-foreground md:text-right">
                         {task.dueDate && (
                           <div>Due: {format(task.dueDate, "PPPP")}</div>
                         )}
 
                         <div>
                           Project:{" "}
-                          <span className="font-medium">
+                          <span className="font-medium break-words">
                             {task.project.title}
                           </span>
                         </div>
@@ -265,7 +262,7 @@ const MyTasks = () => {
 
         {/* BOARD VIEW */}
         <TabsContent value="board">
-          <div className="grid grid-cols-1 md:grid-cols-3  gap-4">
+          <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
@@ -289,7 +286,7 @@ const MyTasks = () => {
                         {task.description || "No description "}
                       </p>
 
-                      <div className="flex items-center mt-2 gap-2">
+                      <div className="mt-2 flex flex-wrap items-center gap-2">
                         <Badge
                           variant={
                             task.priority === "High"
@@ -341,7 +338,7 @@ const MyTasks = () => {
                         {task.description || "No description "}
                       </p>
 
-                      <div className="flex items-center mt-2 gap-2">
+                      <div className="mt-2 flex flex-wrap items-center gap-2">
                         <Badge
                           variant={
                             task.priority === "High"
@@ -393,7 +390,7 @@ const MyTasks = () => {
                         {task.description || "No description "}
                       </p>
 
-                      <div className="flex items-center mt-2 gap-2">
+                      <div className="mt-2 flex flex-wrap items-center gap-2">
                         <Badge
                           variant={
                             task.priority === "High"

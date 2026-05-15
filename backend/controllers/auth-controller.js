@@ -6,7 +6,7 @@ import {
   deleteExistingVerification,
   getValidVerification,
   buildVerificationLink,
-  sendVerificationEmail
+  sendVerificationEmail,
 } from "../libs/verification-util.js";
 import Verification from "../models/verification.js";
 import { isSendGridConfigured } from "../libs/send-email.js";
@@ -51,12 +51,26 @@ const registerUser = async (req, res) => {
 
     // Create verification token and send email
     await deleteExistingVerification(newUser._id);
-    const { token: verificationToken } = await createVerificationToken(newUser._id, "email-verification", "1h");
-    const verificationLink = buildVerificationLink(verificationToken, "verify-email");
+    const { token: verificationToken } = await createVerificationToken(
+      newUser._id,
+      "email-verification",
+      "1h"
+    );
+    const verificationLink = buildVerificationLink(
+      verificationToken,
+      "verify-email"
+    );
     const emailSubject = "Verify your email";
-    const devMsg = "Account created. Email delivery is disabled locally, so use the verification link from this response.";
+    const devMsg =
+      "Account created. Email delivery is disabled locally, so use the verification link from this response.";
     const devExtra = { verificationLink, verificationToken };
-    const emailResult = await sendVerificationEmail(email, verificationLink, emailSubject, devMsg, devExtra);
+    const emailResult = await sendVerificationEmail(
+      email,
+      verificationLink,
+      emailSubject,
+      devMsg,
+      devExtra
+    );
     if (emailResult.dev) {
       return res.status(201).json(emailResult.response);
     }
@@ -64,7 +78,8 @@ const registerUser = async (req, res) => {
       return res.status(500).json(emailResult.response);
     }
     res.status(201).json({
-      message: "Verification email sent to your email. Please check and verify your account.",
+      message:
+        "Verification email sent to your email. Please check and verify your account.",
     });
   } catch (error) {
     console.log(error);
@@ -87,16 +102,31 @@ const loginUser = async (req, res) => {
       const existingVerification = await getValidVerification(user._id);
       if (existingVerification) {
         return res.status(400).json({
-          message: "Email not verified. Please check your email for the verification link.",
+          message:
+            "Email not verified. Please check your email for the verification link.",
         });
       }
       await deleteExistingVerification(user._id);
-      const { token: verificationToken } = await createVerificationToken(user._id, "email-verification", "1h");
-      const verificationLink = buildVerificationLink(verificationToken, "verify-email");
+      const { token: verificationToken } = await createVerificationToken(
+        user._id,
+        "email-verification",
+        "1h"
+      );
+      const verificationLink = buildVerificationLink(
+        verificationToken,
+        "verify-email"
+      );
       const emailSubject = "Verify your email";
-      const devMsg = "Email verification is required. Email delivery is disabled locally, so use the verification link from this response.";
+      const devMsg =
+        "Email verification is required. Email delivery is disabled locally, so use the verification link from this response.";
       const devExtra = { verificationLink, verificationToken };
-      const emailResult = await sendVerificationEmail(email, verificationLink, emailSubject, devMsg, devExtra);
+      const emailResult = await sendVerificationEmail(
+        email,
+        verificationLink,
+        emailSubject,
+        devMsg,
+        devExtra
+      );
       if (emailResult.dev) {
         return res.status(200).json(emailResult.response);
       }
@@ -104,7 +134,8 @@ const loginUser = async (req, res) => {
         return res.status(500).json(emailResult.response);
       }
       return res.status(201).json({
-        message: "Verification email sent to your email. Please check and verify your account.",
+        message:
+          "Verification email sent to your email. Please check and verify your account.",
       });
     }
 
@@ -123,7 +154,7 @@ const loginUser = async (req, res) => {
     user.lastLogin = new Date();
     await user.save();
 
-    const userData = user.toObject();
+    const userData = user.toObject(); 
     delete userData.password;
 
     res.status(200).json({
@@ -214,12 +245,26 @@ const resetPasswordRequest = async (req, res) => {
       });
     }
     await deleteExistingVerification(user._id);
-    const { token: resetPasswordToken } = await createVerificationToken(user._id, "reset-password", "15m");
-    const resetPasswordLink = buildVerificationLink(resetPasswordToken, "reset-password");
+    const { token: resetPasswordToken } = await createVerificationToken(
+      user._id,
+      "reset-password",
+      "15m"
+    );
+    const resetPasswordLink = buildVerificationLink(
+      resetPasswordToken,
+      "reset-password"
+    );
     const emailSubject = "Reset your password";
-    const devMsg = "Reset password email delivery is disabled locally, so use the reset link from this response.";
+    const devMsg =
+      "Reset password email delivery is disabled locally, so use the reset link from this response.";
     const devExtra = { resetPasswordLink, resetPasswordToken };
-    const emailResult = await sendVerificationEmail(email, resetPasswordLink, emailSubject, devMsg, devExtra);
+    const emailResult = await sendVerificationEmail(
+      email,
+      resetPasswordLink,
+      emailSubject,
+      devMsg,
+      devExtra
+    );
     if (emailResult.dev) {
       return res.status(200).json(emailResult.response);
     }

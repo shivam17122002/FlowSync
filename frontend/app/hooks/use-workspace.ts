@@ -1,5 +1,5 @@
 import type { WorkspaceForm } from "@/components/workspace/create-workspace";
-import { fetchData, postData } from "@/lib/fetch-util";
+import { deleteData, fetchData, postData } from "@/lib/fetch-util";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const useCreateWorkspace = () => {
@@ -58,5 +58,12 @@ export const useAcceptGenerateInviteMutation = () => {
   return useMutation({
     mutationFn: (workspaceId: string) =>
       postData(`/workspaces/${workspaceId}/accept-generate-invite`, {}),
+  });
+};
+
+export const useDeleteWorkspaceMutation = () => {
+  return useMutation({
+    mutationFn: (workspaceId: string) =>
+      deleteData(`/workspaces/${workspaceId}`),
   });
 };

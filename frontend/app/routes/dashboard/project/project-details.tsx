@@ -52,36 +52,36 @@ const ProjectDetails = () => {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
+      <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+        <div className="min-w-0">
           <BackButton />
-          <div className="flex items-center gap-3">
-            <h1 className="text-xl md:text-2xl font-bold">{project.title}</h1>
+          <div className="flex min-w-0 items-center gap-3">
+            <h1 className="break-words text-xl font-bold md:text-2xl">{project.title}</h1>
           </div>
           {project.description && (
-            <p className="text-sm text-gray-500">{project.description}</p>
+            <p className="break-words text-sm text-gray-500">{project.description}</p>
           )}
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex items-center gap-2 min-w-32">
-            <div className="text-sm text-muted-foreground">Progress:</div>
+        <div className="flex w-full flex-col gap-3 sm:flex-row md:w-auto md:items-center">
+          <div className="flex min-w-0 items-center gap-2 sm:min-w-40">
+            <div className="shrink-0 text-sm text-muted-foreground">Progress:</div>
             <div className="flex-1">
               <Progress value={projectProgress} className="h-2" />
             </div>
-            <span className="text-sm text-muted-foreground">
+            <span className="shrink-0 text-sm text-muted-foreground">
               {projectProgress}%
             </span>
           </div>
 
-          <Button onClick={() => setIsCreateTask(true)}>Add Task</Button>
+          <Button className="w-full sm:w-auto" onClick={() => setIsCreateTask(true)}>Add Task</Button>
         </div>
       </div>
 
-      <div className="flex items-center justify-between">
+      <div className="flex min-w-0 items-center justify-between">
         <Tabs defaultValue="all" className="w-full">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <TabsList>
+          <div className="mb-6 flex flex-col justify-between gap-4 xl:flex-row xl:items-center">
+            <TabsList className="h-auto w-full flex-wrap justify-start sm:w-auto">
               <TabsTrigger value="all" onClick={() => setTaskFilter("All")}>
                 All Tasks
               </TabsTrigger>
@@ -99,9 +99,9 @@ const ProjectDetails = () => {
               </TabsTrigger>
             </TabsList>
 
-            <div className="flex items-center text-sm">
-              <span className="text-muted-foreground">Status:</span>
-              <div>
+            <div className="flex flex-col gap-2 text-sm sm:flex-row sm:items-center">
+              <span className="shrink-0 text-muted-foreground">Status:</span>
+              <div className="flex flex-wrap gap-2">
                 <Badge variant="outline" className="bg-background">
                   {tasks.filter((task) => task.status === "To Do").length} To Do
                 </Badge>
@@ -117,7 +117,7 @@ const ProjectDetails = () => {
           </div>
 
           <TabsContent value="all" className="m-0">
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
               <TaskColumn
                 title="To Do"
                 tasks={tasks.filter((task) => task.status === "To Do")}
@@ -203,7 +203,7 @@ const TaskColumn = ({
     <div
       className={
         isFullWidth
-          ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+              ? "grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
           : ""
       }
     >
@@ -223,7 +223,7 @@ const TaskColumn = ({
         <div
           className={cn(
             "space-y-3",
-            isFullWidth && "grid grid-cols-2 lg:grid-cols-3 gap-4"
+            isFullWidth && "grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
           )}
         >
           {tasks.length === 0 ? (
@@ -321,7 +321,7 @@ const TaskCard = ({ task, onClick }: { task: Task; onClick: () => void }) => {
           </p>
         )}
 
-        <div className="flex items-center justify-between text-sm">
+        <div className="flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
             {task.assignees && task.assignees.length > 0 && (
               <div className="flex -space-x-2">
@@ -346,7 +346,7 @@ const TaskCard = ({ task, onClick }: { task: Task; onClick: () => void }) => {
           </div>
 
           {task.dueDate && (
-            <div className="text-xs text-muted-foreground flex items-center">
+            <div className="flex items-center text-xs text-muted-foreground">
               <Calendar className="size-3 mr-1" />
               {format(new Date(task.dueDate), "MMM d, yyyy")}
             </div>

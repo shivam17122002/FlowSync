@@ -10,8 +10,6 @@ const getUserProfile = async (req, res) => {
     }
     delete user.password;
 
-    // jfkd
-
     res.status(200).json(user);
   } catch (error) {
     console.error("Error fetching user profile:", error);

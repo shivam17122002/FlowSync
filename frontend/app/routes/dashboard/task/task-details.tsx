@@ -97,26 +97,26 @@ const TaskDetails = () => {
   };
 
   return (
-    <div className="container mx-auto p-0 py-4 md:px-4">
-      <div className="flex flex-col md:flex-row items-center justify-between mb-6">
-        <div className="flex flex-col md:flex-row md:items-center">
+    <div className="mx-auto w-full min-w-0 py-4 md:px-4">
+      <div className="mb-6 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+        <div className="flex min-w-0 flex-col md:flex-row md:items-center">
           <BackButton />
 
-          <h1 className="text-xl md:text-2xl font-bold">{task.title}</h1>
+          <h1 className="break-words text-xl font-bold md:text-2xl">{task.title}</h1>
 
           {task.isArchived && (
-            <Badge className="ml-2" variant={"outline"}>
+            <Badge className="mt-2 w-fit md:ml-2 md:mt-0" variant={"outline"}>
               Archived
             </Badge>
           )}
         </div>
 
-        <div className="flex space-x-2 mt-4 md:mt-0">
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
           <Button
             variant={"outline"}
             size="sm"
             onClick={handleWatchTask}
-            className="w-fit"
+            className="w-full sm:w-fit"
             disabled={isWatching}
           >
             {isUserWatching ? (
@@ -136,7 +136,7 @@ const TaskDetails = () => {
             variant={"outline"}
             size="sm"
             onClick={handleAchievedTask}
-            className="w-fit"
+            className="w-full sm:w-fit"
             disabled={isAchieved}
           >
             {task.isArchived ? "Unarchive" : "Archive"}
@@ -144,11 +144,11 @@ const TaskDetails = () => {
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6">
-        <div className="lg:col-span-2">
-          <div className="bg-card rounded-lg p-6 shadow-sm mb-6">
-            <div className="flex flex-col md:flex-row justify-between items-start mb-4">
-              <div>
+      <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
+        <div className="min-w-0">
+          <div className="mb-6 rounded-lg bg-card p-4 shadow-sm sm:p-6">
+            <div className="mb-4 flex flex-col items-start justify-between gap-4 md:flex-row">
+              <div className="min-w-0">
                 <Badge
                   variant={
                     task.priority === "High"
@@ -172,7 +172,7 @@ const TaskDetails = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 mt-4 md:mt-0">
+              <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
                 <TaskStatusSelector status={task.status} taskId={task._id} />
 
                 <Button
@@ -212,7 +212,7 @@ const TaskDetails = () => {
         </div>
 
         {/* right side */}
-        <div className="w-full">
+        <div className="min-w-0 space-y-6">
           <Watchers watchers={task.watchers || []} />
 
           <TaskActivity resourceId={task._id} />

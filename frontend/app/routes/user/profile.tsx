@@ -21,14 +21,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import {
+  type ChangePasswordFormData,
+  type ProfileFormData,
   useChangePassword,
   useUpdateUserProfile,
   useUserProfileQuery,
 } from "@/hooks/use-user";
+import { fileToBase64 } from "@/lib/file-to-base64";
 import { useAuth } from "@/provider/auth-context";
 import type { User } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, Loader, Loader2 } from "lucide-react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -54,15 +58,13 @@ const profileSchema = z.object({
   profilePicture: z.string().optional(),
 });
 
-export type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
-
-export type ProfileFormData = z.infer<typeof profileSchema>;
-
 const Profile = () => {
   const { data: user, isPending } = useUserProfileQuery() as {
     data: User;
     isPending: boolean;
   };
+  const [uploading, setUploading] = React.useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -133,6 +135,22 @@ const Profile = () => {
     );
   };
 
+  // Handle avatar file change
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const base64 = await fileToBase64(file);
+      profileForm.setValue("profilePicture", base64);
+      toast.success("Image ready. Click 'Save Changes' to update profile.");
+    } catch (err) {
+      toast.error("Failed to read image file");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   if (isPending)
     return (
       <div className="flex justify-center items-center h-screen">
@@ -141,10 +159,10 @@ const Profile = () => {
     );
 
   return (
-    <div className="space-y-8">
-      <div className="px-4 md:px-0">
+    <div className="mx-auto w-full max-w-2xl space-y-6 px-4 py-4 sm:space-y-8 sm:px-6 lg:px-0">
+      <div className="space-y-2">
         <BackButton />
-        <h3 className="text-lg font-medium">Profile Information</h3>
+        <h3 className="text-lg font-medium sm:text-xl">Profile Information</h3>
         <p className="text-sm text-muted-foreground">
           Manage your account settings and preferences.
         </p>
@@ -152,7 +170,7 @@ const Profile = () => {
 
       <Separator />
 
-      <Card>
+      <Card className="overflow-hidden">
         <CardHeader>
           <CardTitle>Personal Information</CardTitle>
           <CardDescription>Update your personal details.</CardDescription>
@@ -163,8 +181,8 @@ const Profile = () => {
               onSubmit={profileForm.handleSubmit(handleProfileFormSubmit)}
               className="grid gap-4"
             >
-              <div className="flex items-center space-x-4 mb-6">
-                <Avatar className="h-20 w-20 bg-gray-600">
+              <div className="mb-6 flex flex-col items-center gap-4 sm:flex-row sm:items-start">
+                <Avatar className="h-20 w-20 shrink-0 bg-gray-600">
                   <AvatarImage
                     src={
                       profileForm.watch("profilePicture") ||
@@ -176,26 +194,31 @@ const Profile = () => {
                     {user?.name?.charAt(0) || "U"}
                   </AvatarFallback>
                 </Avatar>
-                <div>
+                <div className="flex w-full min-w-0 flex-col items-center gap-2 sm:items-start">
                   <input
                     id="avatar-upload"
+                    ref={fileInputRef}
                     type="file"
                     accept="image/*"
-                    // onChange={handleAvatarChange}
-                    // disabled={uploading || isUpdatingProfile}
+                    onChange={handleAvatarChange}
+                    disabled={uploading || isUpdatingProfile}
                     style={{ display: "none" }}
                   />
                   <Button
                     type="button"
                     size="sm"
                     variant="outline"
-                    onClick={() =>
-                      document.getElementById("avatar-upload")?.click()
-                    }
-                    // disabled={uploading || isUpdatingProfile}
+                    className="w-full sm:w-auto"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading || isUpdatingProfile}
                   >
-                    Change Avatar
+                    {uploading ? "Uploading..." : "Change Avatar"}
                   </Button>
+                  {profileForm.watch("profilePicture") && (
+                    <span className="max-w-full truncate text-xs text-muted-foreground sm:max-w-xs">
+                      Image ready. Save to update.
+                    </span>
+                  )}
                 </div>
               </div>
               <FormField
@@ -225,7 +248,7 @@ const Profile = () => {
               </div>
               <Button
                 type="submit"
-                className="w-fit"
+                className="w-full sm:w-fit"
                 disabled={isUpdatingProfile || isPending}
               >
                 {isUpdatingProfile ? (
@@ -242,7 +265,7 @@ const Profile = () => {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="overflow-hidden">
         <CardHeader>
           <CardTitle>Security</CardTitle>
           <CardDescription>Update your password.</CardDescription>
@@ -321,7 +344,7 @@ const Profile = () => {
 
               <Button
                 type="submit"
-                className="mt-2 w-fit"
+                className="mt-2 w-full sm:w-fit"
                 disabled={isPending || isChangingPassword}
               >
                 {isPending || isChangingPassword ? (

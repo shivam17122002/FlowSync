@@ -4,6 +4,7 @@ import { Loader } from "@/components/loader";
 import { CreateWorkspace } from "@/components/workspace/create-workspace";
 import { fetchData } from "@/lib/fetch-util";
 import { useAuth } from "@/provider/auth-context";
+import { cn } from "@/lib/utils";
 import type { Workspace } from "@/types";
 import { useEffect, useMemo, useState } from "react";
 import { Navigate, Outlet, useLoaderData, useLocation, useSearchParams } from "react-router";
@@ -22,6 +23,7 @@ const DashboardLayout = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const [isCreatingWorkspace, setIsCreatingWorkspace] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [currentWorkspace, setCurrentWorkspace] = useState<Workspace | null>(
     null
   );
@@ -64,9 +66,18 @@ const DashboardLayout = () => {
   return (
     <div className="mesh-bg relative flex min-h-screen w-full bg-transparent">
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(148,163,184,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.08)_1px,transparent_1px)] bg-[size:32px_32px] opacity-30" />
-      <SidebarComponent currentWorkspace={currentWorkspace} />
+      <SidebarComponent
+        currentWorkspace={currentWorkspace}
+        isCollapsed={isSidebarCollapsed}
+        onCollapsedChange={setIsSidebarCollapsed}
+      />
 
-      <div className="relative z-10 flex min-h-screen flex-1 flex-col">
+      <div
+        className={cn(
+          "relative z-10 flex min-h-screen min-w-0 flex-1 flex-col transition-[margin] duration-300",
+          isSidebarCollapsed ? "sm:ml-20" : "sm:ml-60"
+        )}
+      >
         <Header
           onWorkspaceSelected={handleWorkspaceSelected}
           selectedWorkspace={currentWorkspace}
@@ -74,7 +85,7 @@ const DashboardLayout = () => {
         />
 
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto w-full max-w-7xl px-3 py-4 sm:px-6 lg:px-8 lg:py-8">
+          <div className="mx-auto w-full max-w-7xl px-3 pb-24 pt-4 sm:px-6 sm:pb-4 lg:px-8 lg:py-8">
             <Outlet />
           </div>
         </main>

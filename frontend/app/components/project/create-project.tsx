@@ -92,7 +92,7 @@ export const CreateProjectDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[540px]">
+      <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto sm:max-w-[34rem]">
         <DialogHeader>
           <DialogTitle>Create Project</DialogTitle>
           <DialogDescription>
@@ -158,7 +158,7 @@ export const CreateProjectDialog = ({
               )}
             />
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-4 sm:grid-cols-2">
               <FormField
                 control={form.control}
                 name="startDate"
@@ -171,7 +171,7 @@ export const CreateProjectDialog = ({
                           <Button
                             variant={"outline"}
                             className={
-                              "w-full justify-start text-left font-normal" +
+                              "w-full justify-start truncate text-left font-normal " +
                               (!field.value ? "text-muted-foreground" : "")
                             }
                           >
@@ -213,7 +213,7 @@ export const CreateProjectDialog = ({
                           <Button
                             variant={"outline"}
                             className={
-                              "w-full justify-start text-left font-normal" +
+                              "w-full justify-start truncate text-left font-normal " +
                               (!field.value ? "text-muted-foreground" : "")
                             }
                           >
@@ -273,7 +273,7 @@ export const CreateProjectDialog = ({
                         <PopoverTrigger asChild>
                           <Button
                             variant={"outline"}
-                            className="w-full justify-start text-left font-normal min-h-11"
+                            className="min-h-11 w-full justify-start text-left font-normal"
                           >
                             {selectedMembers.length === 0 ? (
                               <span className="text-muted-foreground">
@@ -286,14 +286,14 @@ export const CreateProjectDialog = ({
                                 );
 
                                 return `${member?.user.name} (${member?.role})`;
-                              })
+                              }).join(", ")
                             ) : (
                               `${selectedMembers.length} members selected`
                             )}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent
-                          className="w-full max-w-60 overflow-y-auto"
+                          className="max-h-72 w-[var(--radix-popover-trigger-width)] overflow-y-auto p-2"
                           align="start"
                         >
                           <div className="flex flex-col gap-2">
@@ -305,32 +305,34 @@ export const CreateProjectDialog = ({
                               return (
                                 <div
                                   key={member._id}
-                                  className="flex items-center gap-2 p-2 border rounded"
+                                  className="flex flex-col gap-2 rounded border p-2 sm:flex-row sm:items-center"
                                 >
-                                  <Checkbox
-                                    checked={!!selectedMember}
-                                    onCheckedChange={(checked) => {
-                                      if (checked) {
-                                        field.onChange([
-                                          ...selectedMembers,
-                                          {
-                                            user: member.user._id,
-                                            role: "contributor",
-                                          },
-                                        ]);
-                                      } else {
-                                        field.onChange(
-                                          selectedMembers.filter(
-                                            (m) => m.user !== member.user._id
-                                          )
-                                        );
-                                      }
-                                    }}
-                                    id={`member-${member.user._id}`}
-                                  />
-                                  <span className="truncate flex-1">
-                                    {member.user.name}
-                                  </span>
+                                  <div className="flex min-w-0 flex-1 items-center gap-2">
+                                    <Checkbox
+                                      checked={!!selectedMember}
+                                      onCheckedChange={(checked) => {
+                                        if (checked) {
+                                          field.onChange([
+                                            ...selectedMembers,
+                                            {
+                                              user: member.user._id,
+                                              role: "contributor",
+                                            },
+                                          ]);
+                                        } else {
+                                          field.onChange(
+                                            selectedMembers.filter(
+                                              (m) => m.user !== member.user._id
+                                            )
+                                          );
+                                        }
+                                      }}
+                                      id={`member-${member.user._id}`}
+                                    />
+                                    <span className="min-w-0 flex-1 truncate">
+                                      {member.user.name}
+                                    </span>
+                                  </div>
 
                                   {selectedMember && (
                                     <Select
@@ -351,7 +353,7 @@ export const CreateProjectDialog = ({
                                         );
                                       }}
                                     >
-                                      <SelectTrigger>
+                                      <SelectTrigger className="w-full sm:w-36">
                                         <SelectValue placeholder="Select Role" />
                                       </SelectTrigger>
                                       <SelectContent>
@@ -381,7 +383,7 @@ export const CreateProjectDialog = ({
             />
 
             <DialogFooter>
-              <Button type="submit" disabled={isPending}>
+              <Button type="submit" className="w-full sm:w-auto" disabled={isPending}>
                 {isPending ? "Creating..." : "Create Project"}
               </Button>
             </DialogFooter>

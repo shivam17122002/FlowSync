@@ -47,14 +47,14 @@ export const Header = ({
 
   return (
     <div className="sticky top-0 z-40 px-3 pt-3 sm:px-6 lg:px-8">
-      <div className="surface-panel flex min-h-16 items-center justify-between gap-3 px-4 py-3 sm:px-5">
+      <div className="surface-panel flex min-h-16 flex-wrap items-center justify-between gap-3 px-3 py-3 sm:flex-nowrap sm:px-5">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant={"outline"}
-              className="h-auto min-w-[220px] justify-between rounded-2xl border-white/70 px-3 py-2"
+              className="h-auto min-w-0 flex-1 justify-between rounded-2xl border-white/70 px-3 py-2 sm:min-w-[220px] sm:flex-none"
             >
-              <span className="flex items-center gap-3">
+              <span className="flex min-w-0 items-center gap-3">
               {selectedWorkspace ? (
                 <>
                   {selectedWorkspace.color && (
@@ -63,23 +63,23 @@ export const Header = ({
                       name={selectedWorkspace.name}
                     />
                   )}
-                    <span className="text-left">
+                    <span className="min-w-0 text-left">
                       <span className="block text-xs uppercase tracking-[0.2em] text-muted-foreground">
                         Active Workspace
                       </span>
-                      <span className="font-medium">{selectedWorkspace?.name}</span>
+                      <span className="block truncate font-medium">{selectedWorkspace?.name}</span>
                     </span>
                 </>
               ) : (
-                  <span className="text-left">
+                  <span className="min-w-0 text-left">
                     <span className="block text-xs uppercase tracking-[0.2em] text-muted-foreground">
                       Dashboard Scope
                     </span>
-                    <span className="font-medium">Select Workspace</span>
+                    <span className="block truncate font-medium">Select Workspace</span>
                   </span>
               )}
               </span>
-              <ChevronDown className="size-4 text-muted-foreground" />
+              <ChevronDown className="size-4 shrink-0 text-muted-foreground" />
             </Button>
           </DropdownMenuTrigger>
 
@@ -123,7 +123,7 @@ export const Header = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <Button
             variant="ghost"
             size="icon"
@@ -134,10 +134,10 @@ export const Header = ({
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-3 rounded-2xl border border-white/60 bg-white/75 p-1.5 pl-2 shadow-sm transition hover:border-primary/25 hover:bg-white">
+              <button className="flex min-w-0 items-center gap-3 rounded-2xl border border-white/60 bg-white/75 p-1.5 pl-2 shadow-sm transition hover:border-primary/25 hover:bg-white">
                 <div className="hidden text-right sm:block">
-                  <p className="text-sm font-medium leading-none">{user?.name}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">{user?.email}</p>
+                  <p className="max-w-36 truncate text-sm font-medium leading-none">{user?.name}</p>
+                  <p className="mt-1 max-w-40 truncate text-xs text-muted-foreground">{user?.email}</p>
                 </div>
                 <Avatar className="h-9 w-9">
                   <AvatarImage src={user?.profilePicture} alt={user?.name} />

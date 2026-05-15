@@ -2,7 +2,7 @@ import { Outlet } from "react-router";
 
 const UserLayout = () => {
   return (
-    <div className="container max-w-3xl mx-auto py-8 md:py-16">
+    <div className="mx-auto min-h-screen w-full max-w-3xl px-3 py-6 sm:px-6 md:py-10">
       <Outlet />
     </div>
   );

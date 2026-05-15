@@ -28,7 +28,9 @@ export const SidebarNav = ({
     <nav className={cn("flex flex-col gap-y-2", className)} {...props}>
       {items.map((el) => {
         const Icon = el.icon;
-        const isActive = location.pathname === el.href;
+        const isActive =
+          location.pathname === el.href ||
+          (el.href !== "/dashboard" && location.pathname.startsWith(`${el.href}/`));
 
         const handleClick = () => {
           if (el.href === "/workspaces") {
@@ -45,8 +47,8 @@ export const SidebarNav = ({
             key={el.href}
             variant={isActive ? "secondary" : "ghost"}
             className={cn(
-              "h-11 justify-start rounded-2xl px-3 text-sidebar-foreground hover:bg-white/8 hover:text-white",
-              isCollapsed && "w-11 justify-center px-0",
+              "h-11 min-w-0 justify-start rounded-2xl px-3 text-sidebar-foreground hover:bg-white/8 hover:text-white",
+              isCollapsed && "w-full justify-center px-0",
               isActive &&
                 "bg-white text-slate-900 shadow-[0_18px_30px_-24px_rgba(255,255,255,0.85)] hover:bg-white hover:text-slate-900"
             )}
