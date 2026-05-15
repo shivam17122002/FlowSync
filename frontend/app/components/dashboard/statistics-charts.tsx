@@ -33,7 +33,6 @@ import {
   LineChart,
   Pie,
   PieChart,
-  ResponsiveContainer,
   XAxis,
   YAxis,
 } from "recharts";
@@ -54,28 +53,28 @@ export const StatisticsCharts = ({
   workspaceProductivityData,
 }: StatisticsChartsProps) => {
   return (
-    <div className="mb-8 grid grid-cols-1 gap-5 xl:grid-cols-3">
+    <div className="mb-6 grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
       {/* Task Trends */}
-      <Card className="lg:col-span-2 overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-xl backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
-        <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
-          <div className="space-y-1">
-            <CardTitle className="text-lg font-semibold tracking-tight">
+      <Card className="min-w-0 overflow-hidden rounded-xl border border-white/10 bg-white/5 shadow-xl backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl md:col-span-2">
+        <CardHeader className="flex flex-row items-start justify-between gap-3 space-y-0 p-4 pb-2">
+          <div className="min-w-0 space-y-1">
+            <CardTitle className="text-base font-semibold tracking-tight sm:text-lg">
               Task Trends
             </CardTitle>
 
-            <CardDescription className="text-sm text-muted-foreground">
+            <CardDescription className="text-xs text-muted-foreground sm:text-sm">
               Daily task status changes across {stats.totalTasks} tasks
             </CardDescription>
           </div>
 
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
             <ChartLine className="size-5" />
           </div>
         </CardHeader>
 
-        <CardContent className="px-2 pb-4 sm:px-4">
+        <CardContent className="p-4 pt-0">
           <ChartContainer
-            className="h-[260px] sm:h-[320px]"
+            className="h-[220px] w-full sm:h-[240px] lg:h-[260px]"
             config={{
               completed: { color: "#10b981" },
               inProgress: { color: "#3b82f6" },
@@ -83,72 +82,70 @@ export const StatisticsCharts = ({
             }}
           >
             {taskTrendsData?.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={taskTrendsData}>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    vertical={false}
-                    opacity={0.15}
-                  />
+              <LineChart data={taskTrendsData} margin={{ left: -16, right: 8 }}>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  opacity={0.15}
+                />
 
-                  <XAxis
-                    dataKey="name"
-                    stroke="#94a3b8"
-                    fontSize={12}
-                    tickLine={false}
-                    axisLine={false}
-                  />
+                <XAxis
+                  dataKey="name"
+                  stroke="#94a3b8"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                />
 
-                  <YAxis
-                    stroke="#94a3b8"
-                    fontSize={12}
-                    tickLine={false}
-                    axisLine={false}
-                  />
+                <YAxis
+                  stroke="#94a3b8"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                />
 
-                  <ChartTooltip
-                    content={
-                      <ChartTooltipContent className="rounded-xl border border-white/10 bg-background/95 backdrop-blur-xl" />
-                    }
-                  />
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent className="rounded-xl border border-white/10 bg-background/95 backdrop-blur-xl" />
+                  }
+                />
 
-                  <Line
-                    type="monotone"
-                    dataKey="completed"
-                    stroke="#10b981"
-                    strokeWidth={3}
-                    strokeLinecap="round"
-                    dot={{ r: 3, strokeWidth: 2 }}
-                    activeDot={{ r: 6 }}
-                  />
+                <Line
+                  type="monotone"
+                  dataKey="completed"
+                  stroke="#10b981"
+                  strokeWidth={3}
+                  strokeLinecap="round"
+                  dot={{ r: 3, strokeWidth: 2 }}
+                  activeDot={{ r: 6 }}
+                />
 
-                  <Line
-                    type="monotone"
-                    dataKey="inProgress"
-                    stroke="#3b82f6"
-                    strokeWidth={3}
-                    strokeLinecap="round"
-                    dot={{ r: 3, strokeWidth: 2 }}
-                    activeDot={{ r: 6 }}
-                  />
+                <Line
+                  type="monotone"
+                  dataKey="inProgress"
+                  stroke="#3b82f6"
+                  strokeWidth={3}
+                  strokeLinecap="round"
+                  dot={{ r: 3, strokeWidth: 2 }}
+                  activeDot={{ r: 6 }}
+                />
 
-                  <Line
-                    type="monotone"
-                    dataKey="todo"
-                    stroke="#6b7280"
-                    strokeWidth={3}
-                    strokeLinecap="round"
-                    dot={{ r: 3, strokeWidth: 2 }}
-                    activeDot={{ r: 6 }}
-                  />
+                <Line
+                  type="monotone"
+                  dataKey="todo"
+                  stroke="#6b7280"
+                  strokeWidth={3}
+                  strokeLinecap="round"
+                  dot={{ r: 3, strokeWidth: 2 }}
+                  activeDot={{ r: 6 }}
+                />
 
-                  <ChartLegend
-                    verticalAlign="bottom"
-                    height={36}
-                    content={<ChartLegendContent />}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+                <ChartLegend
+                  verticalAlign="bottom"
+                  height={28}
+                  content={<ChartLegendContent />}
+                />
+              </LineChart>
             ) : (
               <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
                 No analytics data available
@@ -159,26 +156,26 @@ export const StatisticsCharts = ({
       </Card>
 
       {/* Project Status */}
-      <Card className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-xl backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
-        <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
-          <div className="space-y-1">
-            <CardTitle className="text-lg font-semibold tracking-tight">
+      <Card className="min-w-0 overflow-hidden rounded-xl border border-white/10 bg-white/5 shadow-xl backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
+        <CardHeader className="flex flex-row items-start justify-between gap-3 space-y-0 p-4 pb-2">
+          <div className="min-w-0 space-y-1">
+            <CardTitle className="text-base font-semibold tracking-tight sm:text-lg">
               Project Status
             </CardTitle>
 
-            <CardDescription className="text-sm text-muted-foreground">
+            <CardDescription className="text-xs text-muted-foreground sm:text-sm">
               Project status breakdown
             </CardDescription>
           </div>
 
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600">
             <ChartPie className="size-5" />
           </div>
         </CardHeader>
 
-        <CardContent className="px-2 pb-4 sm:px-4">
+        <CardContent className="p-4 pt-0">
           <ChartContainer
-            className="h-[260px] sm:h-[320px]"
+            className="h-[220px] w-full sm:h-[240px] lg:h-[260px]"
             config={{
               Completed: { color: "#10b981" },
               "In Progress": { color: "#3b82f6" },
@@ -186,40 +183,36 @@ export const StatisticsCharts = ({
             }}
           >
             {projectStatusData?.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
-                  <Pie
-                    data={projectStatusData}
-                    cx="50%"
-                    cy="50%"
-                    dataKey="value"
-                    nameKey="name"
-                    innerRadius={65}
-                    outerRadius={90}
-                    paddingAngle={3}
-                    label={({ percent }) =>
-                      `${(percent * 100).toFixed(0)}%`
-                    }
-                    labelLine={false}
-                  >
-                    {projectStatusData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
+              <PieChart margin={{ top: 2, right: 2, left: 2, bottom: 2 }}>
+                <Pie
+                  data={projectStatusData}
+                  cx="50%"
+                  cy="48%"
+                  dataKey="value"
+                  nameKey="name"
+                  innerRadius="48%"
+                  outerRadius="68%"
+                  paddingAngle={3}
+                  label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                  labelLine={false}
+                >
+                  {projectStatusData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
 
-                  <ChartTooltip
-                    content={
-                      <ChartTooltipContent className="rounded-xl border border-white/10 bg-background/95 backdrop-blur-xl" />
-                    }
-                  />
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent className="rounded-xl border border-white/10 bg-background/95 backdrop-blur-xl" />
+                  }
+                />
 
-                  <ChartLegend
-                    verticalAlign="bottom"
-                    height={36}
-                    content={<ChartLegendContent />}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+                <ChartLegend
+                  verticalAlign="bottom"
+                  height={28}
+                  content={<ChartLegendContent />}
+                />
+              </PieChart>
             ) : (
               <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
                 No project data available
@@ -230,26 +223,26 @@ export const StatisticsCharts = ({
       </Card>
 
       {/* Task Priority */}
-      <Card className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-xl backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
-        <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
-          <div className="space-y-1">
-            <CardTitle className="text-lg font-semibold tracking-tight">
+      <Card className="min-w-0 overflow-hidden rounded-xl border border-white/10 bg-white/5 shadow-xl backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
+        <CardHeader className="flex flex-row items-start justify-between gap-3 space-y-0 p-4 pb-2">
+          <div className="min-w-0 space-y-1">
+            <CardTitle className="text-base font-semibold tracking-tight sm:text-lg">
               Task Priority
             </CardTitle>
 
-            <CardDescription className="text-sm text-muted-foreground">
+            <CardDescription className="text-xs text-muted-foreground sm:text-sm">
               Task priority breakdown
             </CardDescription>
           </div>
 
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-600">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600">
             <ChartPie className="size-5" />
           </div>
         </CardHeader>
 
-        <CardContent className="px-2 pb-4 sm:px-4">
+        <CardContent className="p-4 pt-0">
           <ChartContainer
-            className="h-[260px] sm:h-[320px]"
+            className="h-[220px] w-full sm:h-[240px] lg:h-[260px]"
             config={{
               High: { color: "#ef4444" },
               Medium: { color: "#f59e0b" },
@@ -257,40 +250,36 @@ export const StatisticsCharts = ({
             }}
           >
             {taskPriorityData?.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
-                  <Pie
-                    data={taskPriorityData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={65}
-                    outerRadius={90}
-                    paddingAngle={3}
-                    dataKey="value"
-                    nameKey="name"
-                    label={({ percent }) =>
-                      `${(percent * 100).toFixed(0)}%`
-                    }
-                    labelLine={false}
-                  >
-                    {taskPriorityData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
+              <PieChart margin={{ top: 2, right: 2, left: 2, bottom: 2 }}>
+                <Pie
+                  data={taskPriorityData}
+                  cx="50%"
+                  cy="48%"
+                  innerRadius="48%"
+                  outerRadius="68%"
+                  paddingAngle={3}
+                  dataKey="value"
+                  nameKey="name"
+                  label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                  labelLine={false}
+                >
+                  {taskPriorityData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
 
-                  <ChartTooltip
-                    content={
-                      <ChartTooltipContent className="rounded-xl border border-white/10 bg-background/95 backdrop-blur-xl" />
-                    }
-                  />
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent className="rounded-xl border border-white/10 bg-background/95 backdrop-blur-xl" />
+                  }
+                />
 
-                  <ChartLegend
-                    verticalAlign="bottom"
-                    height={36}
-                    content={<ChartLegendContent />}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+                <ChartLegend
+                  verticalAlign="bottom"
+                  height={28}
+                  content={<ChartLegendContent />}
+                />
+              </PieChart>
             ) : (
               <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
                 No priority data available
@@ -301,86 +290,85 @@ export const StatisticsCharts = ({
       </Card>
 
       {/* Workspace Productivity */}
-      <Card className="lg:col-span-2 overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-xl backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
-        <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
-          <div className="space-y-1">
-            <CardTitle className="text-lg font-semibold tracking-tight">
+      <Card className="min-w-0 overflow-hidden rounded-xl border border-white/10 bg-white/5 shadow-xl backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl md:col-span-2">
+        <CardHeader className="flex flex-row items-start justify-between gap-3 space-y-0 p-4 pb-2">
+          <div className="min-w-0 space-y-1">
+            <CardTitle className="text-base font-semibold tracking-tight sm:text-lg">
               Workspace Productivity
             </CardTitle>
 
-            <CardDescription className="text-sm text-muted-foreground">
+            <CardDescription className="text-xs text-muted-foreground sm:text-sm">
               Task completion by project
             </CardDescription>
           </div>
 
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-fuchsia-500/10 text-fuchsia-600">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-fuchsia-500/10 text-fuchsia-600">
             <ChartBarBig className="size-5" />
           </div>
         </CardHeader>
 
-        <CardContent className="px-2 pb-4 sm:px-4">
+        <CardContent className="p-4 pt-0">
           <ChartContainer
-            className="h-[260px] sm:h-[320px]"
+            className="h-[220px] w-full sm:h-[240px] lg:h-[260px]"
             config={{
               completed: { color: "#3b82f6" },
               total: { color: "#64748b" },
             }}
           >
             {workspaceProductivityData?.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={workspaceProductivityData}
-                  barGap={6}
-                  barSize={24}
-                >
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    vertical={false}
-                    opacity={0.15}
-                  />
+              <BarChart
+                data={workspaceProductivityData}
+                barGap={6}
+                barSize={20}
+                margin={{ left: -16, right: 8 }}
+              >
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  opacity={0.15}
+                />
 
-                  <XAxis
-                    dataKey="name"
-                    stroke="#94a3b8"
-                    fontSize={12}
-                    tickLine={false}
-                    axisLine={false}
-                  />
+                <XAxis
+                  dataKey="name"
+                  stroke="#94a3b8"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                />
 
-                  <YAxis
-                    stroke="#94a3b8"
-                    fontSize={12}
-                    tickLine={false}
-                    axisLine={false}
-                  />
+                <YAxis
+                  stroke="#94a3b8"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                />
 
-                  <ChartTooltip
-                    content={
-                      <ChartTooltipContent className="rounded-xl border border-white/10 bg-background/95 backdrop-blur-xl" />
-                    }
-                  />
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent className="rounded-xl border border-white/10 bg-background/95 backdrop-blur-xl" />
+                  }
+                />
 
-                  <Bar
-                    dataKey="total"
-                    fill="#64748b"
-                    radius={[10, 10, 0, 0]}
-                    name="Total Tasks"
-                  />
+                <Bar
+                  dataKey="total"
+                  fill="#64748b"
+                  radius={[8, 8, 0, 0]}
+                  name="Total Tasks"
+                />
 
-                  <Bar
-                    dataKey="completed"
-                    fill="#3b82f6"
-                    radius={[10, 10, 0, 0]}
-                    name="Completed Tasks"
-                  />
+                <Bar
+                  dataKey="completed"
+                  fill="#3b82f6"
+                  radius={[8, 8, 0, 0]}
+                  name="Completed Tasks"
+                />
 
-                  <ChartLegend
-                    verticalAlign="bottom"
-                    height={36}
-                    content={<ChartLegendContent />}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
+                <ChartLegend
+                  verticalAlign="bottom"
+                  height={28}
+                  content={<ChartLegendContent />}
+                />
+              </BarChart>
             ) : (
               <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
                 No productivity data available
